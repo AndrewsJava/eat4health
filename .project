@@ -3,6 +3,7 @@
 	<name>Eat4Health</name>
 	<comment></comment>
 	<projects>
+		<project>AndroidSupportLibrary</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

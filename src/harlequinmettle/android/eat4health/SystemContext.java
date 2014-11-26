@@ -13,7 +13,7 @@ public class SystemContext extends android.app.Application {
 		instance = this;
 	}
 
-	public static Context getContext() {
+	public Context getContext() {
 		return instance;
 	}
 

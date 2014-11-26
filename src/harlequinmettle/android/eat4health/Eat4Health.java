@@ -1,5 +1,8 @@
 package harlequinmettle.android.eat4health;
 
+import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
+import harlequinmettle.android.tools.androidsupportlibrary.TextViewFactory;
+
 import java.util.Locale;
 
 import android.app.Fragment;
@@ -32,6 +35,8 @@ public class Eat4Health extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ContextReference setUniversalContext = new ContextReference(this);
+		// TextViewFactory.setContext(this);
 		setScreenDimensionVariables();
 
 		// setUpDrawerFromXML();
@@ -86,7 +91,7 @@ public class Eat4Health extends ActionBarActivity {
 		LinearLayout child = new LinearLayout(this);
 		child.setOrientation(LinearLayout.VERTICAL);
 		for (String title : titles) {
-			TextView text = new TextView(this);
+			TextView text = TextViewFactory.makeDefaultTextView(title);
 			text.setText(title);
 			child.addView(text);
 		}
