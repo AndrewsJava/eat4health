@@ -1,155 +1,109 @@
 package harlequinmettle.android.eat4health;
 
+import harlequinmettle.android.eat4health.datautil.GeneralLoadingThread;
+import harlequinmettle.android.eat4health.datautil.LoadWeightsConversion;
+import harlequinmettle.android.eat4health.datautil.ObjectLoadingThread;
+import harlequinmettle.android.eat4health.fragments.IntroFragment;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
-import harlequinmettle.android.tools.androidsupportlibrary.TextViewFactory;
-
-import java.util.Locale;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-public class Eat4Health extends ActionBarActivity {
-	private String[] mPlanetTitles = { "Mercury", "Venus", "earth", "mars" };
-	private DrawerLayout mDrawerLayout;
-	private ScrollView mDrawerList;
-	int content_frame = 1010101;
-	private int sw, sh;
+public class Eat4Health extends Eat4HealthNavDrawerSetup {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ContextReference setUniversalContext = new ContextReference(this);
-		// TextViewFactory.setContext(this);
-		setScreenDimensionVariables();
-
-		// setUpDrawerFromXML();
+		runActivityUtilities();
+		setDefaults();
 		setUpDrawerLayout();
 
+		setIntroFragment();
+		legacySetup();
 	}
 
-	private void setScreenDimensionVariables() {
-		DisplayMetrics metrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		sw = metrics.widthPixels;
-		sh = metrics.heightPixels;
-	}
+	private void legacySetup() {
 
-	// private void setUpDrawerFromXML() {
-	// setContentView(R.layout.activity_eat4_health);
-	//
-	// mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-	// mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-	// mDrawerList = (ListView) findViewById(R.id.left_drawer);
-	//
-	// // Set the adapter for the list view
-	// mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-	// R.layout.drawer_list_item, mPlanetTitles));
-	// // Set the list's click listener
-	// mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-	// }
+		// try to obtain weather use prefers 100g 100kcal or 'serving'
+		Nutrient_Measure = restorePreference("SEARCHUNITS");
 
-	private void setUpDrawerLayout() {
-		mDrawerLayout = new android.support.v4.widget.DrawerLayout(this);
-		mDrawerLayout.setScrimColor(0x77556677);
-		FrameLayout fl = new FrameLayout(this);
-		fl.setId(content_frame);
-		mDrawerList = new ScrollView(this);
+		Foods_Search = restorePreference("SEARCHFOODS");//
 
-		addViewsFromStrings(mDrawerList, mPlanetTitles);
-		// mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-		// R.layout.drawer_list_item, mPlanetTitles));
-		DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams((int) (0.9 * sw), LinearLayout.LayoutParams.MATCH_PARENT);
+		save_db = restorePreference("SAVEDB");
 
-		lp.gravity = Gravity.START;
-		mDrawerList.setLayoutParams(lp);
+		restoreGuidelines();
 
-		// mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-		mDrawerLayout.addView(fl, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-		mDrawerLayout.addView(mDrawerList);
+		restoreMyGoodNutrients();
 
-		setContentView(mDrawerLayout);
-	}
+		restoreMyFoodUnitIds();
 
-	private void addViewsFromStrings(ScrollView listview, String[] titles) {
-		LinearLayout child = new LinearLayout(this);
-		child.setOrientation(LinearLayout.VERTICAL);
-		for (String title : titles) {
-			TextView text = TextViewFactory.makeDefaultTextView(title);
-			text.setText(title);
-			child.addView(text);
+		if (!loadMyFoodGroups())
+			MY_FOOD_GROUPS = DEFAULT_FOOD_GROUPS;
+
+		if (!loadMyNutrients())
+			MY_NUTRIENTS = DEFAULT_NUTRIENTS;
+
+		for (int i = 0; i < optimalServingId.length; i++) {
+			optimalServingId[i] = -1;
 		}
-		listview.addView(child);
+		// OPTIONAL TO SAVE AS OBJECTS AND LOAD LIKE DB
+
+		a = new GeneralLoadingThread(this, nutrients, units, "nutr.txt");
+
+		b = new GeneralLoadingThread(this, foodGroups, "group.txt");
+		// KCAL PER100G REPLACE WITH DIRECT REFERENCE TO DB[5]
+		c = new GeneralLoadingThread(this, foods, foodsByGroup, "food.txt", GeneralLoadingThread.FOOD);
+		// sorts each foodgroup id after loading
+
+		new Thread(a).start();
+		new Thread(b).start();
+		new Thread(c).start();
+
+		new Thread(new LoadWeightsConversion()).start();
+		// load database if objects not found automatically lauch text reading
+		// thread
+		// either thread finishes by starting thread to load
+		_loaded = false;
+		ObjectLoadingThread objLoader = new ObjectLoadingThread(this, db);
+		loadingThread = new Thread(objLoader);
+		loadingThread.start();
+
+		setFoodsIds();
+
+		restoreQuantities();
+		restoreUnits();
+
+		pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+		pb.setId(PROGRESS_BAR_ID);
+
+		Toast mToast = Toast.makeText(this, "\n\n\n\n\nPlease adjust some settings while database loads\n\n\n\n\n", 1);
+		mToast.setGravity(Gravity.TOP, 0, 50);
+
+		mToast.show();
 	}
 
-	/* The click listner for ListView in the navigation drawer */
-	private class DrawerItemClickListener implements ListView.OnItemClickListener {
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			selectItem(position);
-		}
+	private void runActivityUtilities() {
+		ContextReference setUniversalContext = new ContextReference(this);
+		setScreenDimensionVariables();
 	}
 
-	private void selectItem(int position) {
-		// update the main content by replacing fragments
-		Fragment fragment = new PlanetFragment();
-		Bundle args = new Bundle();
-		args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-		fragment.setArguments(args);
+	private void setIntroFragment() {
+		pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+		pb.setId(PROGRESS_BAR_ID);
+		Fragment fragment = new IntroFragment(pb);
+		// Bundle args = new Bundle();
+		// args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+		// fragment.setArguments(args);
 
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction().replace(content_frame, fragment).commit();
 
 		// update selected item and title, then close the drawer
 		// mDrawerList.setItemChecked(position, true);
-		setTitle(mPlanetTitles[position]);
+		setTitle("intro fragment");
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
-
-	/**
-	 * Fragment that appears in the "content_frame", shows a planet
-	 */
-	public static class PlanetFragment extends Fragment {
-		public static final String ARG_PLANET_NUMBER = "planet_number";
-
-		public PlanetFragment() {
-			// Empty constructor required for fragment subclasses
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-			int i = getArguments().getInt(ARG_PLANET_NUMBER);
-			String planet = getResources().getStringArray(R.array.planets_array)[i];
-
-			int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()), "drawable", getActivity().getPackageName());
-			((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
-			getActivity().setTitle(planet);
-			return rootView;
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.eat4_health, menu);
-		return true;
-	}
-
 }
