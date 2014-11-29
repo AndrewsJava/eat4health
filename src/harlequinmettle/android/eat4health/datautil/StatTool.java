@@ -8,16 +8,16 @@ import java.util.Collections;
 
 public class StatTool {
 
-	double sum, sumOfSquares, mean, median, min, max, n, range;
+	public double sum, sumOfSquares, mean, median, min, max, n, range;
 
-	int[] histogram;
+	public int[] histogram;
 
-	double cutOffPoint, interval;
+	public double cutOffPoint, interval;
 
 	public double standardDeviation;
 
 	// float nutrientPt;
-	static int nbars = 100;
+	public static int nbars = 100;
 
 	public StatTool(int[] foodsToUse, int nutrientID) {
 		long time = System.currentTimeMillis();

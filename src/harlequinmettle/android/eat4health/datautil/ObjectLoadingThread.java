@@ -51,7 +51,7 @@ public class ObjectLoadingThread implements Runnable {
 			if (i % 3 == 0) {
 				Eat4HealthData.mHandler.post(new Runnable() {
 					public void run() {
-						Eat4HealthData.pb.setProgress((int) (100.0 * objLoading / 129));
+						Eat4HealthData.progressBar.setProgress((int) (100.0 * objLoading / 129));
 					}
 				});
 			}

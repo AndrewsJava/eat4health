@@ -1,54 +1,34 @@
 package harlequinmettle.android.eat4health;
 
-import harlequinmettle.android.tools.androidsupportlibrary.FloatStringBimap;
 import harlequinmettle.android.tools.androidsupportlibrary.TextViewFactory;
-
-import java.util.Locale;
-
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Eat4HealthNavDrawerSetup extends Eat4HealthLegacy {
-	public String[] mPlanetTitles = { "Mercury", "Venus", "earth", "mars" };
+public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
+	// public String[] mPlanetTitles = { "Mercury", "Venus", "earth", "mars" };
+
 	public DrawerLayout mDrawerLayout;
 	public ScrollView mDrawerList;
 	int content_frame = 1010101;
-	public int sw, sh;
-	public final FloatStringBimap viewMap = new FloatStringBimap();
+
 	public ActionBarDrawerToggle mDrawerToggle;
-
-	OnClickListener menuDrawerListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			String menuChoice = ((TextView) v).getText().toString();
-			int position = (int) viewMap.getFloatFromStringKey(menuChoice);
-			selectItem(position);
-		}
-	};
+	LinearLayout menuchild;
 
 	protected void setUpDrawerToggle() {
 		final CharSequence mTitle = getTitle();
@@ -132,8 +112,13 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthLegacy {
 		FrameLayout fl = new FrameLayout(this);
 		fl.setId(content_frame);
 		mDrawerList = new ScrollView(this);
+		menuchild = new LinearLayout(this);
+		mDrawerList.addView(menuchild);
+		menuchild.setOrientation(LinearLayout.VERTICAL);
 
-		addViewsFromStrings(mDrawerList, mPlanetTitles);
+		// addViewsFromStrings("label", mPlanetTitles);
+		addViewsFromStrings("Explore Foods", INTRO);
+		addViewsFromStrings("Settings/Preferences", PREFS);
 		// mDrawerList.setAdapter(new ArrayAdapter<String>(this,
 		// R.layout.drawer_list_item, mPlanetTitles));
 		DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams((int) (0.9 * sw), LinearLayout.LayoutParams.MATCH_PARENT);
@@ -152,18 +137,32 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthLegacy {
 		setContentView(mDrawerLayout);
 	}
 
-	private void addViewsFromStrings(ScrollView listview, String[] titles) {
-		LinearLayout child = new LinearLayout(this);
-		child.setOrientation(LinearLayout.VERTICAL);
+	private void addViewsFromStrings(String menuCategory, String[] titles) {
+		TextView menucat = TextViewFactory.makeLeftTextView(menuCategory);
+		menuchild.addView(menucat);
+
 		float i = 0;
 		for (String title : titles) {
 			TextView text = TextViewFactory.makeDefaultTextView(title);
 			text.setOnClickListener(menuDrawerListener);
-			text.setText(title);
-			child.addView(text);
+
+			menuchild.addView(text);
 			viewMap.put(title, i++);
 		}
-		listview.addView(child);
+	}
+
+	private void addViewsFromStrings(String menuCategory, String[] titles, int[] ids, View.OnClickListener actionDefinition) {
+		TextView menucat = TextViewFactory.makeLeftTextView(menuCategory);
+		menuchild.addView(menucat);
+
+		int i = 0;
+		for (String title : titles) {
+			TextView text = TextViewFactory.makeDefaultTextView(title);
+			text.setOnClickListener(actionDefinition);
+
+			menuchild.addView(text);
+			viewMap.put(title, (float) ids[i++]);
+		}
 	}
 
 	/* The click listner for ListView in the navigation drawer */
@@ -171,45 +170,6 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthLegacy {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			selectItem(position);
-		}
-	}
-
-	private void selectItem(int position) {
-		// update the main content by replacing fragments
-		Fragment fragment = new PlanetFragment();
-		Bundle args = new Bundle();
-		args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-		fragment.setArguments(args);
-
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(content_frame, fragment).commit();
-
-		// update selected item and title, then close the drawer
-		// mDrawerList.setItemChecked(position, true);
-		setTitle(mPlanetTitles[position]);
-		mDrawerLayout.closeDrawer(mDrawerList);
-	}
-
-	/**
-	 * Fragment that appears in the "content_frame", shows a planet
-	 */
-	public static class PlanetFragment extends Fragment {
-		public static final String ARG_PLANET_NUMBER = "planet_number";
-
-		public PlanetFragment() {
-			// Empty constructor required for fragment subclasses
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-			int i = getArguments().getInt(ARG_PLANET_NUMBER);
-			String planet = getResources().getStringArray(R.array.planets_array)[i];
-
-			int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()), "drawable", getActivity().getPackageName());
-			((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
-			getActivity().setTitle(planet);
-			return rootView;
 		}
 	}
 

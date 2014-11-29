@@ -51,7 +51,7 @@ public class LoadDataFromTextFile implements Runnable {
 							int pgrs = (int) (100.0 * lineCount / 578642);
 							if (pgrs > 97)
 								pgrs = 100;
-							Eat4HealthData.pb.setProgress(pgrs);
+							Eat4HealthData.progressBar.setProgress(pgrs);
 						}
 					});
 					Thread.yield();

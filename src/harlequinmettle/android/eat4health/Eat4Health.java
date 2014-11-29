@@ -21,8 +21,8 @@ public class Eat4Health extends Eat4HealthNavDrawerSetup {
 		setDefaults();
 		setUpDrawerLayout();
 
-		setIntroFragment();
 		legacySetup();
+		setIntroFragment();
 	}
 
 	private void legacySetup() {
@@ -75,9 +75,19 @@ public class Eat4Health extends Eat4HealthNavDrawerSetup {
 
 		restoreQuantities();
 		restoreUnits();
+		progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+		progressBar.setId(PROGRESS_BAR_ID);
 
-		pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-		pb.setId(PROGRESS_BAR_ID);
+		// progressBar.setPadding(0, 0, 0, 0);
+		// progressBar.setMinimumHeight(TextViewFactory.getPixelsDensityEquivalent(144));
+		// LayoutParams barParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+		// LayoutParams.MATCH_PARENT);
+		// progressBar.setLayoutParams(barParams);
+		// progressBar.getLayoutParams().height =
+		// TextViewFactory.getPixelsDensityEquivalent(144);
+		// progressBar.getLayoutParams().width =
+		// TextViewFactory.getPixelsDensityEquivalent((int) (sw * .7));
+		progressBar.invalidate();
 
 		Toast mToast = Toast.makeText(this, "\n\n\n\n\nPlease adjust some settings while database loads\n\n\n\n\n", 1);
 		mToast.setGravity(Gravity.TOP, 0, 50);
@@ -91,9 +101,8 @@ public class Eat4Health extends Eat4HealthNavDrawerSetup {
 	}
 
 	private void setIntroFragment() {
-		pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-		pb.setId(PROGRESS_BAR_ID);
-		Fragment fragment = new IntroFragment(pb);
+
+		Fragment fragment = new IntroFragment(progressBar);
 		// Bundle args = new Bundle();
 		// args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
 		// fragment.setArguments(args);

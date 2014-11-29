@@ -1,17 +1,274 @@
 package harlequinmettle.android.eat4health;
 
 import harlequinmettle.android.eat4health.datautil.SimpleStatBuilder;
+import harlequinmettle.android.eat4health.legacyconversion.MenuScroller;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import android.content.Context;
+
 public class Eat4HealthLegacy extends Eat4HealthData {
+
+	public static MenuScroller intro;
+	public static MenuScroller settings;
+
+	public static void setSearchResultsFrom(String searchWord, int groups_search) {
+		searching = true;
+		if (searchWord.length() < 3) {
+			searchResults = new String[1];
+			foodCodeResults = new int[1];
+			searchResults[0] = "Water, tap, drinking";
+			foodCodeResults[0] = 8081;
+			return;
+		}
+		ArrayList<String> results = new ArrayList<String>();
+		ArrayList<Long> resultsID = new ArrayList<Long>();
+
+		// search for search word as one single unit only
+		int[] foodIDsToSearch;
+
+		switch (groups_search) {
+		case USE_ALL_FOODS:
+			foodIDsToSearch = new int[FOOD_COUNT];
+			for (int i = 0; i < FOOD_COUNT; i++) {
+				foodIDsToSearch[i] = i;
+			}
+			break;
+		case USE_MY_FOOD_GROUPS:
+			foodIDsToSearch = constructUniqueValuesFromMyFoodGroups();
+			break;
+		case USE_MY_FOODS:
+			foodIDsToSearch = constructUniqueValuesFromMyFoods();
+			break;
+		case USE_ONE_FOOD_GROUP:
+			foodIDsToSearch = foodsByGroup[Food_Group];
+			break;
+		default:
+
+			foodIDsToSearch = foodsByGroup[groups_search];
+			break;
+		}
+
+		String sw = searchWord.trim();
+		while (sw.contains("  ")) {
+			sw = sw.replaceAll("  ", " ");
+		}
+		sw = " " + sw + " ";
+		// for each food description with spaces added check for an exact
+		// match
+		for (int fdID : foodIDsToSearch) {
+			String item = " " + foods[fdID];
+			if (item.toLowerCase().replaceAll("[,\\(\\)]", " ").contains(sw)) {
+				results.add(item.trim());
+				resultsID.add(new Long(fdID));
+			}
+		}
+		if (false) {
+			sw = sw.trim() + " ";
+			if (results.size() < 50)
+				for (int fdID : foodIDsToSearch) {
+					String item = " " + foods[fdID];
+					if (item.toLowerCase().replaceAll("[,\\(\\)]", " ").contains(sw) && !results.contains(item.trim())) {
+						results.add(item.trim());
+						resultsID.add(new Long(fdID));
+					}
+				}
+		}
+		// sw = " " + sw.trim();
+		sw = sw.trim();
+		if (results.size() < 40 && sw.length() > 2)
+			for (int fdID : foodIDsToSearch) {
+				String item = foods[fdID];
+				if (!results.contains(item.trim()) && item.toLowerCase().contains(sw)) {
+					// System.out
+					// .println("found with regex ---    ---    ----    ---    ----    ----");
+					results.add(item.trim());
+					resultsID.add(new Long(fdID));
+				}
+			}
+
+		if (results.size() < 5)
+			if (searchWord.length() > 3) {
+				searchWord = searchWord.trim().substring(0, searchWord.length() - 1);
+				for (int fdID : foodIDsToSearch) {
+					String item = " " + foods[fdID];
+					if (!results.contains(item.trim()) && item.toLowerCase().replaceAll("[,\\(\\)]", " ").contains(searchWord))
+						results.add(item.trim());
+					resultsID.add(new Long(fdID));
+					// System.out.println("found ON letter less ONE");
+
+				}
+			}
+
+		if (results.size() < 50) {
+			String[] sWords = searchWord.trim().split(" ");
+			if (sWords.length > 1)
+				outerloop: for (int fdID : foodIDsToSearch) {
+					String item = foods[fdID];
+					for (String pt : sWords) {
+						if (results.contains(item.trim()) || !item.toLowerCase().contains(pt) && pt.length() > 3)
+							continue outerloop;
+					}
+					results.add(item.trim());
+					resultsID.add(new Long(fdID));
+					System.out.println("found MULTIPLE WORD CASE---");
+					if (results.size() > 50) {
+						break outerloop;
+					}
+				}
+		}
+		// load results of search int static array
+		// string description with cooresponding food code
+		searchResults = new String[results.size()];
+		foodCodeResults = new int[results.size()];
+
+		for (int i = 0; i < results.size(); i++) {
+			searchResults[i] = results.get(i);
+			foodCodeResults[i] = (resultsID.get(i).intValue());
+
+		}
+		searching = false;
+	}
+
+	public static String[] getMyFoodsAsTextArray() {
+		ArrayList<String> foodListConstruct = new ArrayList<String>();
+		for (TreeMap<Integer, Boolean> foodi : Eat4Health.allMyFoods) {
+			for (Integer i : foodi.keySet()) {
+				foodListConstruct.add(foods[i]);
+			}
+		}
+		String[] fd = new String[foodListConstruct.size()];
+		for (int i = 0; i < fd.length; i++) {
+			fd[i] = foodListConstruct.get(i);
+		}
+		return fd;
+	}
+
+	public static int[] getMyFoodsIdsArray() {
+		ArrayList<Integer> foodIdsConstruct = new ArrayList<Integer>();
+		for (TreeMap<Integer, Boolean> foodi : Eat4Health.allMyFoods) {
+			for (Integer i : foodi.keySet()) {
+				foodIdsConstruct.add(i);
+			}
+		}
+		int[] ids = new int[foodIdsConstruct.size()];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = foodIdsConstruct.get(i);
+		}
+		return ids;
+	}
+
+	public static void setFoodsIds() {
+		int[] theseFoods = null;
+		switch (Foods_Search) {
+		case USE_ALL_FOODS:
+			theseFoods = new int[8194];
+			for (int i = 0; i < 8194; i++)
+				theseFoods[i] = i;
+			break;
+		case USE_MY_FOODS:
+			ArrayList<Integer> getMySelectFoods = new ArrayList<Integer>();
+
+			for (TreeMap<Integer, Boolean> amf : allMyFoods) {
+				for (Entry<Integer, Boolean> ent : amf.entrySet()) {
+					if (ent.getValue())
+						getMySelectFoods.add(ent.getKey());
+				}
+			}
+			theseFoods = new int[getMySelectFoods.size()];
+			for (int i = 0; i < theseFoods.length; i++)
+				theseFoods[i] = getMySelectFoods.get(i);
+
+			break;
+		case USE_MY_FOOD_GROUPS:
+			if (_loaded)
+				theseFoods = constructUniqueValuesFromMyFoodGroups();
+			else
+				needToSetSearchFoods = true;
+			break;
+		case USE_ONE_FOOD_GROUP:
+			theseFoods = foodsByGroup[Food_Group];
+			break;
+		default:
+			theseFoods = foodsByGroup[Food_Group];
+			break;
+		}
+
+		searchTheseFoods = theseFoods;
+	}
+
+	public static String getFoodsSearchDescription() {
+
+		switch (Foods_Search) {
+		case USE_ALL_FOODS:
+			return "all foods in database";
+
+		case USE_MY_FOODS:
+			return "My Foods";
+		case USE_MY_FOOD_GROUPS:
+			return "My Food Groups";
+		case USE_ONE_FOOD_GROUP:
+			return foodGroups[Food_Group];
+		default:
+			break;
+		}
+
+		return "";
+	}
+
+	private static int[] constructUniqueValuesFromMyFoods() {
+		HashSet<Integer> uniqueValues = new HashSet<Integer>();
+		for (int i = 0; i < allMyFoods.size(); i++) {
+			TreeMap<Integer, Boolean> perGroup = allMyFoods.get(i);
+			if (MY_FOOD_GROUPS[i]) {
+				for (int j : perGroup.keySet()) {
+					uniqueValues.add(j);
+				}
+			}
+		}
+		int counter = 0;
+		int[] uniques = new int[uniqueValues.size()];
+		for (int i : uniqueValues) {
+			uniques[counter++] = i;
+		}
+		return uniques;
+	}
+
+	public static int[] getFoodSearchIds() {
+		return searchTheseFoods;
+	}
+
+	public static int findGroupFromFoodID(int foodId) {
+		for (int i = 0; i < 25; i++) {
+			if (Arrays.binarySearch(foodsByGroup[i], foodId) >= 0)
+				return i;
+		}
+
+		return 10;
+	}
+
+	public static void saveObject(Object OBJ, String obLocatorName) {
+		try {
+			FileOutputStream fos = ContextReference.getAppContext().openFileOutput(obLocatorName, Context.MODE_PRIVATE);
+			ObjectOutputStream objout = new ObjectOutputStream(fos);
+			objout.writeObject(OBJ);
+			objout.flush();
+			objout.close();
+
+		} catch (IOException ioe) {
+		}
+	}
 
 	protected void restoreMyGoodNutrients() {
 		int def = 0;
@@ -162,49 +419,6 @@ public class Eat4HealthLegacy extends Eat4HealthData {
 			quantityFactor[i] = new float[1];// corresponding
 			quantityFactor[i][0] = 100;
 		}
-	}
-
-	public static void setFoodsIds() {
-		int[] theseFoods = null;
-		switch (Foods_Search) {
-		case USE_ALL_FOODS:
-			theseFoods = new int[8194];
-			for (int i = 0; i < 8194; i++)
-				theseFoods[i] = i;
-			break;
-		case USE_MY_FOODS:
-			ArrayList<Integer> getMySelectFoods = new ArrayList<Integer>();
-
-			for (TreeMap<Integer, Boolean> amf : allMyFoods) {
-				for (Entry<Integer, Boolean> ent : amf.entrySet()) {
-					if (ent.getValue())
-						getMySelectFoods.add(ent.getKey());
-				}
-			}
-			theseFoods = new int[getMySelectFoods.size()];
-			for (int i = 0; i < theseFoods.length; i++)
-				theseFoods[i] = getMySelectFoods.get(i);
-
-			break;
-		case USE_MY_FOOD_GROUPS:
-			if (_loaded)
-				theseFoods = constructUniqueValuesFromMyFoodGroups();
-			else
-				needToSetSearchFoods = true;
-			break;
-		case USE_ONE_FOOD_GROUP:
-			theseFoods = foodsByGroup[Food_Group];
-			break;
-		default:
-			theseFoods = foodsByGroup[Food_Group];
-			break;
-		}
-
-		searchTheseFoods = theseFoods;
-	}
-
-	public static int[] getFoodSearchIds() {
-		return searchTheseFoods;
 	}
 
 	private static int[] constructUniqueValuesFromMyFoodGroups() {

@@ -2,6 +2,7 @@ package harlequinmettle.android.eat4health;
 
 import harlequinmettle.android.eat4health.datautil.GeneralLoadingThread;
 import harlequinmettle.android.eat4health.datautil.StatTool;
+import harlequinmettle.android.eat4health.staticdataarrays.FG2_I;
 import harlequinmettle.android.eat4health.staticdataarrays.HasServingSizeInfo;
 import harlequinmettle.android.eat4health.staticdataarrays.I_Preferences;
 
@@ -10,15 +11,15 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-public class Eat4HealthData extends ActionBarActivity implements I_Preferences, HasServingSizeInfo {
+public class Eat4HealthData extends ActionBarActivity implements I_Preferences, HasServingSizeInfo, FG2_I {
 	//
 	public static Thread loadingThread;
-	public static HorizontalScrollView application;
+	public static ViewPager application;
 	public static LinearLayout appAccess;
 	public static ArrayList<TreeMap<Integer, Boolean>> allMyFoods = new ArrayList<TreeMap<Integer, Boolean>>();
 
@@ -37,47 +38,47 @@ public class Eat4HealthData extends ActionBarActivity implements I_Preferences, 
 	public static final int USING_SERVING = 400000;
 	public static final int USING_GRAMS = 800000;
 
-	static final int USE_ALL_FOODS = 10000;
-	static final int USE_MY_FOOD_GROUPS = 5000;
-	static final int USE_MY_FOODS = 500;
-	static final int USE_ONE_FOOD_GROUP = 128;
+	public static final int USE_ALL_FOODS = 10000;
+	public static final int USE_MY_FOOD_GROUPS = 5000;
+	public static final int USE_MY_FOODS = 500;
+	public static final int USE_ONE_FOOD_GROUP = 128;
 
-	static final int SEARCH_TYPE_SUM = 10000002;
-	static final int SEARCH_TYPE_PRODUCT = 10000001;
+	public static final int SEARCH_TYPE_SUM = 10000002;
+	public static final int SEARCH_TYPE_PRODUCT = 10000001;
 
 	// static final int VIEW_HORIZONTAL = 151516161;
-	static final int VIEW_VERTICAL = 515151661;
+	public static final int VIEW_VERTICAL = 515151661;
 	// PREFERENCE NEEDS TO BE STORED AND RESTORED AS PREFERENCE
-	static int myFoods_View = VIEW_VERTICAL;
-	static int Foods_Search = USE_ALL_FOODS;
+	public static int myFoods_View = VIEW_VERTICAL;
+	public static int Foods_Search = USE_ALL_FOODS;
 	public static int Nutrient_Measure = USING_GRAMS;
-	static int Food_Group = 21;// default irrelevant
-	static int Search_Type = SEARCH_TYPE_PRODUCT;
+	public static int Food_Group = 21;// default irrelevant
+	public static int Search_Type = SEARCH_TYPE_PRODUCT;
 
 	public static boolean longLoading = false;
-	static boolean searching = false;
+	public static boolean searching = false;
 	public static boolean calculatingStats = false;
 	public static boolean statsLoaded = false;
-	static float sw, sh;
+	public static float sw, sh;
 	public static float[][] db = new float[130][8194];
 
 	// 4052~23~Honey
-	static String[] foods = new String[8194];
+	public static String[] foods = new String[8194];
 	// static int[] MY_FOODS;
 	// static byte[] foodGroupMap = new byte[8194];// CHANGE TO BYTE
 	// static float[] kCal ;// CHANGE TO BYTE
 	// 9~Fats and Oils
-	static String[] foodGroups = new String[25];
+	public static String[] foodGroups = new String[25];
 	// 5~kcal~Energy
-	static String[] nutrients = new String[130];
-	static String[] units = new String[130];
+	public static String[] nutrients = new String[130];
+	public static String[] units = new String[130];
 
-	static int[][] foodsByGroup = new int[25][];
+	public static int[][] foodsByGroup = new int[25][];
 
-	static String[] searchResults;
-	static int[] foodCodeResults;
-	static final int PROGRESS_BAR_ID = 100010001;
-	static int[] searchTheseFoods;
+	public static String[] searchResults;
+	public static int[] foodCodeResults;
+	public static final int PROGRESS_BAR_ID = 100010001;
+	public static int[] searchTheseFoods;
 
 	private static final String DATA_100G = "database_object";
 	public static final int USING_NOT_ZEROS = 1024;
@@ -90,10 +91,10 @@ public class Eat4HealthData extends ActionBarActivity implements I_Preferences, 
 	GeneralLoadingThread a, b, c;
 	public static boolean[] MY_FOOD_GROUPS;
 	public static boolean[] MY_NUTRIENTS;
-	public static ProgressBar pb;
+	public static ProgressBar progressBar;
 	public static Handler mHandler = new Handler();
 
-	static HashMap<Integer, StatTool> nutritionStats = new HashMap<Integer, StatTool>();
+	public static HashMap<Integer, StatTool> nutritionStats = new HashMap<Integer, StatTool>();
 	public static HashMap<Integer, float[]> highlightFactors = new HashMap<Integer, float[]>();
 
 	// -1 if no serving size info is available
@@ -111,9 +112,9 @@ public class Eat4HealthData extends ActionBarActivity implements I_Preferences, 
 	// amount of
 	// different
 	// units
-	static final int TEXT_SMALL = 21;
-	static final int TEXT_MED = 25;
-	static final int TEXT_LARGE = 35;
+	public static final int TEXT_SMALL = 21;
+	public static final int TEXT_MED = 25;
+	public static final int TEXT_LARGE = 35;
 	public static boolean needToSetSearchFoods;
 	public static int save_db = 0;
 
