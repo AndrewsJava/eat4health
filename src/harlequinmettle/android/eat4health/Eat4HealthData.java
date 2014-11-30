@@ -5,22 +5,26 @@ import harlequinmettle.android.eat4health.datautil.StatTool;
 import harlequinmettle.android.eat4health.staticdataarrays.FG2_I;
 import harlequinmettle.android.eat4health.staticdataarrays.HasServingSizeInfo;
 import harlequinmettle.android.eat4health.staticdataarrays.I_Preferences;
+import harlequinmettle.android.tools.androidsupportlibrary.FloatStringBimap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
 import android.os.Handler;
-import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 
 public class Eat4HealthData extends ActionBarActivity implements I_Preferences, HasServingSizeInfo, FG2_I {
 	//
+
+	public static final FloatStringBimap viewMap = new FloatStringBimap();
+	public DrawerLayout mDrawerLayout;
+	public ScrollView mDrawerList;
+	int content_frame = 1010101;
 	public static Thread loadingThread;
-	public static ViewPager application;
-	public static LinearLayout appAccess;
 	public static ArrayList<TreeMap<Integer, Boolean>> allMyFoods = new ArrayList<TreeMap<Integer, Boolean>>();
 
 	public static HashMap<Integer, Float> myFoodQuantities = new HashMap<Integer, Float>();
@@ -30,6 +34,7 @@ public class Eat4HealthData extends ActionBarActivity implements I_Preferences, 
 	public static boolean[] myGoodNutrients;
 	public static float[] goodNutritionGoals;
 	public static boolean _loaded = false;
+	public static final int FOOD_GROUP_COUNT = 25;
 	public static final int FOOD_COUNT = 8194;// REPLACE ALL APP WIDE INSTANCEES
 												// WITH
 	// CONTANT

@@ -23,8 +23,6 @@ import android.widget.Toast;
 public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 	// public String[] mPlanetTitles = { "Mercury", "Venus", "earth", "mars" };
 
-	public DrawerLayout mDrawerLayout;
-	public ScrollView mDrawerList;
 	int content_frame = 1010101;
 
 	public ActionBarDrawerToggle mDrawerToggle;
@@ -117,8 +115,8 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 		menuchild.setOrientation(LinearLayout.VERTICAL);
 
 		// addViewsFromStrings("label", mPlanetTitles);
-		addViewsFromStrings("Explore Foods", INTRO);
-		addViewsFromStrings("Settings/Preferences", PREFS);
+		addViewsFromStrings("Explore Foods", INTRO, NAV_IDS, navigationListener);
+		addViewsFromStrings("Settings/Preferences", PREFS, NAV_IDS_2, navigationListener);
 		// mDrawerList.setAdapter(new ArrayAdapter<String>(this,
 		// R.layout.drawer_list_item, mPlanetTitles));
 		DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams((int) (0.9 * sw), LinearLayout.LayoutParams.MATCH_PARENT);
@@ -137,19 +135,19 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 		setContentView(mDrawerLayout);
 	}
 
-	private void addViewsFromStrings(String menuCategory, String[] titles) {
-		TextView menucat = TextViewFactory.makeLeftTextView(menuCategory);
-		menuchild.addView(menucat);
-
-		float i = 0;
-		for (String title : titles) {
-			TextView text = TextViewFactory.makeDefaultTextView(title);
-			text.setOnClickListener(menuDrawerListener);
-
-			menuchild.addView(text);
-			viewMap.put(title, i++);
-		}
-	}
+	// private void addViewsFromStrings(String menuCategory, String[] titles) {
+	// TextView menucat = TextViewFactory.makeLeftTextView(menuCategory);
+	// menuchild.addView(menucat);
+	//
+	// float i = 0;
+	// for (String title : titles) {
+	// TextView text = TextViewFactory.makeDefaultTextView(title);
+	// text.setOnClickListener(menuDrawerListener);
+	//
+	// menuchild.addView(text);
+	// viewMap.put(title, i++);
+	// }
+	// }
 
 	private void addViewsFromStrings(String menuCategory, String[] titles, int[] ids, View.OnClickListener actionDefinition) {
 		TextView menucat = TextViewFactory.makeLeftTextView(menuCategory);

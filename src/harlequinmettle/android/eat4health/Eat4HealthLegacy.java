@@ -17,11 +17,16 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import android.content.Context;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 
-public class Eat4HealthLegacy extends Eat4HealthData {
+public class Eat4HealthLegacy extends Eat4HealthFunctions {
 
 	public static MenuScroller intro;
 	public static MenuScroller settings;
+
+	public static HorizontalScrollView application;
+	public static LinearLayout appAccess;
 
 	public static void setSearchResultsFrom(String searchWord, int groups_search) {
 		searching = true;

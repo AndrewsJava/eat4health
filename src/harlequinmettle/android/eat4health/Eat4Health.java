@@ -6,13 +6,14 @@ import harlequinmettle.android.eat4health.datautil.ObjectLoadingThread;
 import harlequinmettle.android.eat4health.fragments.IntroFragment;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class Eat4Health extends Eat4HealthNavDrawerSetup {
+public class Eat4Health extends Eat4HealthViewPagerTest {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,9 @@ public class Eat4Health extends Eat4HealthNavDrawerSetup {
 
 	private void legacySetup() {
 
+		// main layout (and its one child) for whole app
+		application = new HorizontalScrollView(this);
+		appAccess = new LinearLayout(this);// may need to make sure its
 		// try to obtain weather use prefers 100g 100kcal or 'serving'
 		Nutrient_Measure = restorePreference("SEARCHUNITS");
 
@@ -103,16 +107,8 @@ public class Eat4Health extends Eat4HealthNavDrawerSetup {
 	private void setIntroFragment() {
 
 		Fragment fragment = new IntroFragment(progressBar);
-		// Bundle args = new Bundle();
-		// args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-		// fragment.setArguments(args);
 
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(content_frame, fragment).commit();
+		setFragment(fragment, "intro fragment");
 
-		// update selected item and title, then close the drawer
-		// mDrawerList.setItemChecked(position, true);
-		setTitle("intro fragment");
-		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 }
