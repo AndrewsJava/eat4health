@@ -21,7 +21,6 @@ public class Eat4Health extends Eat4HealthViewPagerTest {
 		runActivityUtilities();
 		setDefaults();
 		setUpDrawerLayout();
-
 		legacySetup();
 		setIntroFragment();
 	}
