@@ -5,6 +5,7 @@ import harlequinmettle.android.eat4health.Eat4HealthFunctions;
 import harlequinmettle.android.eat4health.Eat4HealthListeners;
 import harlequinmettle.android.eat4health.staticdataarrays.FG2_I;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
+import harlequinmettle.android.tools.androidsupportlibrary.CustomTextView;
 import harlequinmettle.android.tools.androidsupportlibrary.ViewFactory;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -12,13 +13,10 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 public class FoodListViewPagerFragment extends Fragment {
 
@@ -29,14 +27,8 @@ public class FoodListViewPagerFragment extends Fragment {
 		// Empty constructor required for fragment subclasses
 	}
 
-	protected View.OnClickListener foodWordsListener = new View.OnClickListener() {
-
-		public void onClick(View view) {
-
-		}
-	};
-
-	protected LinearLayout setUpViewPagerTest() {
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		LinearLayout mainLayout = new LinearLayout(ContextReference.getAppContext());
 
@@ -46,52 +38,39 @@ public class FoodListViewPagerFragment extends Fragment {
 		viewPager.setLayoutParams(params);
 		myPagerAdapter = new MyPagerAdapter();
 		viewPager.setAdapter(myPagerAdapter);
-		return mainLayout;
-	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-		if (true)
-			return setUpViewPagerTest();
-		HorizontalScrollView application = new HorizontalScrollView(ContextReference.getAppContext());
-		LinearLayout appAccess = new LinearLayout(ContextReference.getAppContext());
-
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		for (int i = 0; i < Eat4Health.FOOD_GROUP_COUNT; i++) {
-			if (!Eat4Health.MY_FOOD_GROUPS[i])
-				continue;
-
-			LinearLayout child = ViewFactory.basicLinearLayout();
-
-			Eat4HealthFunctions.addViewsFromStrings(Eat4Health.foodGroups[i], child, FG2_I.FOODGROUPS[i], foodWordsListener);
-
-			ScrollView foodList = new ScrollView(ContextReference.getAppContext());
-			foodList.addView(child);
-			appAccess.addView(foodList);
-		}
-
-		// rootView.addView(foodLists);
 		getActivity().setTitle(Eat4HealthListeners.INTRO[0]);
 		// return rootView;
-		return appAccess;
+		return mainLayout;
 	}
 
 	private class MyPagerAdapter extends PagerAdapter {
 
-		int NumberOfPages = Eat4Health.FOOD_GROUP_COUNT;
-
-		// int[] res = { android.R.drawable.ic_dialog_alert,
-		// android.R.drawable.ic_menu_camera,
-		// android.R.drawable.ic_menu_compass,
-		// android.R.drawable.ic_menu_directions,
-		// android.R.drawable.ic_menu_gallery };
-		// int[] backgroundcolor = { 0xFF101010, 0xFF202020, 0xFF303030,
-		// 0xFF404040, 0xFF505050 };
+		int NumberOfPages = countPreferredGroups_setArrayIndicies();
+		int[] preferredFoodGroupIndicies;
 
 		@Override
 		public int getCount() {
 			return NumberOfPages;
+		}
+
+		private int countPreferredGroups_setArrayIndicies() {
+			int prefcount = 0;
+			int i = 0;
+			for (boolean pref : Eat4Health.MY_FOOD_GROUPS) {
+				if (pref)
+					prefcount++;
+				i++;
+			}
+			preferredFoodGroupIndicies = new int[prefcount];
+			prefcount = 0;
+			i = 0;
+			for (boolean pref : Eat4Health.MY_FOOD_GROUPS) {
+				if (pref)
+					preferredFoodGroupIndicies[prefcount++] = i;
+				i++;
+			}
+			return prefcount;
 		}
 
 		@Override
@@ -106,7 +85,8 @@ public class FoodListViewPagerFragment extends Fragment {
 
 			LinearLayout child = ViewFactory.basicLinearLayout();
 
-			Eat4HealthFunctions.addViewsFromStrings(Eat4Health.foodGroups[position], child, FG2_I.FOODGROUPS[position], foodWordsListener);
+			Eat4HealthFunctions.addViewsFromStrings(Eat4Health.foodGroups[preferredFoodGroupIndicies[position]], child,
+					FG2_I.FOODGROUPS[preferredFoodGroupIndicies[position]], foodGroupSearchListener);
 
 			ScrollView foodList = new ScrollView(ContextReference.getAppContext());
 			foodList.addView(child);
@@ -118,15 +98,6 @@ public class FoodListViewPagerFragment extends Fragment {
 			layout.setLayoutParams(layoutParams);
 			layout.addView(foodList);
 
-			final int page = position;
-			layout.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Toast.makeText(ContextReference.getAppContext(), "Page " + page + " clicked", Toast.LENGTH_LONG).show();
-				}
-			});
-
 			container.addView(layout);
 			return layout;
 		}
@@ -137,5 +108,21 @@ public class FoodListViewPagerFragment extends Fragment {
 		}
 
 	}
+
+	View.OnClickListener foodGroupSearchListener = new View.OnClickListener() {
+		// added to keyword buttons ~2000
+		public void onClick(View view) {
+			int id = view.getId();
+			CustomTextView b = (CustomTextView) view;
+			// b.getBackground().setColorFilter(0xff999999,
+			// PorterDuff.Mode.MULTIPLY);
+			String searchWord = b.getText().toString();
+
+			Eat4Health.setSearchResultsFrom(searchWord, Eat4Health.USE_ALL_FOODS);
+
+			Eat4Health.appSelf.setFragment(new SearchFoodsResultsFragment(), searchWord);
+
+		}
+	};
 
 }

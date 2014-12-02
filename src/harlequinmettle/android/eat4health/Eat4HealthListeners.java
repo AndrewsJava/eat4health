@@ -16,10 +16,12 @@ import android.widget.Toast;
 public class Eat4HealthListeners extends Eat4HealthLegacy {
 
 	public static final String[] INTRO = { "Food Lists", "Word Search", "Search By Nutrient", "Evaluate Diet" };
+	static final int FOOD_LIST_ID = INTRO[0].hashCode();
 	public static final String[] PREFS = { "Food Groups", "Nutrients", "Set Nutrient Goals", "My Foods: View", "My Foods: Remove",
 			"Options" };
-	public static final int[] NAV_IDS = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	public static final int[] NAV_IDS_2 = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+	// public static final int[] NAV_IDS = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	// public static final int[] NAV_IDS_2 = { 10, 11, 12, 13, 14, 15, 16, 17,
+	// 18, 19 };
 
 	public static boolean[] scrollinflated = new boolean[25];
 	static int scrollCount = 0;
@@ -44,41 +46,15 @@ public class Eat4HealthListeners extends Eat4HealthLegacy {
 				mToast.show();
 			}
 			scrollinflated = new boolean[25];
-			// load food group labeled scrolls
-			scrollCount = 1;
-
-			setFragment(new FoodListViewPagerFragment(), "asdfasdf");
-			if (true)
-				return;
-
-			// Eat4Health.appAccess.removeAllViews();
-			// Eat4Health.appAccess.addView(Eat4Health.intro);
-
 			// index = 1;
-			switch (id) {
-			case 0:// Search Foods by Food Group
+			if (id == INTRO[0].hashCode()) {
 				scrollinflated = new boolean[25];
 				// load food group labeled scrolls
 				scrollCount = 1;
 
-				setFragment(new FoodListViewPagerFragment(), INTRO[id]);
-				// // original KeywordScroller - label button doesn't scroll
-				// // but inflates list of keywords
-				// KeywordScroller kws = new
-				// KeywordScroller(ContextReference.getAppContext(), i);
-				// kws.setId(i);
-				// // linear layout to prevent title button from scrolling
-				// LinearLayout title = ViewFactory.basicLinearLayout();
-				// // title button with kws.inflatorlistener id i
-				// Button titleButton = titleButton(kws, i);
-				// // add title button to layout
-				// title.addView(titleButton);
-				// // add uninflated keywordscroller to linear layout
-				// title.addView(kws);
-				// // add linear layout to application - default possition
-				// Eat4Health.appAccess.addView(title);
+				setFragment(new FoodListViewPagerFragment(), label);
+			}
 
-				break;
 			// case 1:// search by typing a keyword
 			// // 2 causes search results/nutrition info to be placed to
 			// // right of text
@@ -122,10 +98,11 @@ public class Eat4HealthListeners extends Eat4HealthLegacy {
 			// Eat4Health.appAccess.addView(caclulateNutritionState);
 			//
 			// break;
-			default:
-				break;
+			// default:
+			// break;
+			//
+			// }
 
-			}
 			final ViewTreeObserver viewTreeObserver4 = Eat4Health.application.getViewTreeObserver();
 			if (viewTreeObserver4.isAlive()) {
 				viewTreeObserver4.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {

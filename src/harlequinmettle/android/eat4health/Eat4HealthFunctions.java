@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 public class Eat4HealthFunctions extends Eat4HealthData {
 
-	protected void setFragment(Fragment fragment, String title) {
+	public void setFragment(Fragment fragment, CharSequence label) {
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction().replace(content_frame, fragment).commit();
 		// for back navigation
 		// fragmentManager.beginTransaction().replace(content_frame,
 		// fragment).addToBackStack(title).commit();
-		setTitle(title);
+		setTitle(label);
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
 
@@ -27,7 +27,7 @@ public class Eat4HealthFunctions extends Eat4HealthData {
 		for (String title : titles) {
 			TextView text = TextViewFactory.makeDefaultTextView(title);
 			text.setOnClickListener(actionDefinition);
-
+			text.setId(title.hashCode());
 			layout.addView(text);
 			viewMap.put(title, (float) title.hashCode());
 		}

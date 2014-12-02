@@ -13,7 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class Eat4Health extends Eat4HealthViewPagerTest {
+public class Eat4Health extends TESTINGGROUND {
+	public static Eat4Health appSelf;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,7 @@ public class Eat4Health extends Eat4HealthViewPagerTest {
 	}
 
 	private void runActivityUtilities() {
+		appSelf = this;
 		ContextReference setUniversalContext = new ContextReference(this);
 		setScreenDimensionVariables();
 	}

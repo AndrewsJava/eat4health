@@ -3,6 +3,7 @@ package harlequinmettle.android.eat4health;
 import harlequinmettle.android.tools.androidsupportlibrary.TextViewFactory;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
@@ -21,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
-	// public String[] mPlanetTitles = { "Mercury", "Venus", "earth", "mars" };
 
 	int content_frame = 1010101;
 
@@ -111,15 +111,21 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 		fl.setId(content_frame);
 		mDrawerList = new ScrollView(this);
 		menuchild = new LinearLayout(this);
+		GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] { 0xFF616261, 0xAA131313 });
+		gd.setCornerRadius(0f);
+
+		menuchild.setBackgroundDrawable(gd);
+
 		mDrawerList.addView(menuchild);
 		menuchild.setOrientation(LinearLayout.VERTICAL);
 
-		// addViewsFromStrings("label", mPlanetTitles);
-		addViewsFromStrings("Explore Foods", INTRO, NAV_IDS, navigationListener);
-		addViewsFromStrings("Settings/Preferences", PREFS, NAV_IDS_2, navigationListener);
-		// mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-		// R.layout.drawer_list_item, mPlanetTitles));
-		DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams((int) (0.9 * sw), LinearLayout.LayoutParams.MATCH_PARENT);
+		addViewsFromStrings("Explore Foods", INTRO, navigationListener);
+		addViewsFromStrings("Settings/Preferences", PREFS, navigationListener);
+
+		// DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams((int)
+		// (0.9 * sw), LinearLayout.LayoutParams.MATCH_PARENT);
+		DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.MATCH_PARENT);
 
 		lp.gravity = Gravity.START;
 		mDrawerList.setLayoutParams(lp);
@@ -149,7 +155,7 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 	// }
 	// }
 
-	private void addViewsFromStrings(String menuCategory, String[] titles, int[] ids, View.OnClickListener actionDefinition) {
+	private void addViewsFromStrings(String menuCategory, String[] titles, View.OnClickListener actionDefinition) {
 		TextView menucat = TextViewFactory.makeLeftTextView(menuCategory);
 		menuchild.addView(menucat);
 
@@ -158,8 +164,9 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 			TextView text = TextViewFactory.makeDefaultTextView(title);
 			text.setOnClickListener(actionDefinition);
 
+			text.setId(title.hashCode());
 			menuchild.addView(text);
-			viewMap.put(title, (float) ids[i++]);
+			viewMap.put(title, (float) title.hashCode());
 		}
 	}
 
