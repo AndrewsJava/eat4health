@@ -3,6 +3,7 @@ package harlequinmettle.android.eat4health;
 import harlequinmettle.android.eat4health.fragments.FoodListViewPagerFragment;
 import harlequinmettle.android.eat4health.fragments.FragmentCore;
 import harlequinmettle.android.eat4health.legacyconversion.FoodDescriptionsScroller;
+import harlequinmettle.android.eat4health.myviews.SearchFoodListColapsableGroupScrollingLayoutView;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
 import harlequinmettle.android.tools.androidsupportlibrary.ViewFactory;
 import android.view.Gravity;
@@ -53,6 +54,12 @@ public class Eat4HealthListeners extends Eat4HealthLegacy {
 				scrollCount = 1;
 
 				setFragment(new FoodListViewPagerFragment(), label);
+			}
+
+			if (id == INTRO[1].hashCode()) {
+
+				Eat4Health.appSelf.appContainer.removeAllViews();
+				Eat4Health.appSelf.appContainer.addView(new SearchFoodListColapsableGroupScrollingLayoutView());
 			}
 
 			// case 1:// search by typing a keyword

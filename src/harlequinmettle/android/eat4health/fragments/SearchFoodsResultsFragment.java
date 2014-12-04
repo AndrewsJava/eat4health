@@ -46,6 +46,18 @@ public class SearchFoodsResultsFragment extends Fragment {
 
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		View view = Eat4Health.appSelf.appContainer;
+		if (view != null) {
+			ViewGroup parentViewGroup = (ViewGroup) view.getParent();
+			if (parentViewGroup != null) {
+				parentViewGroup.removeAllViews();
+			}
+		}
+	}
+
 	View.OnClickListener foodGroupSearchListener = new View.OnClickListener() {
 		// added to keyword buttons ~2000
 		public void onClick(View view) {

@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class Eat4Health extends TESTINGGROUND {
-	public static Eat4Health appSelf;
+	int xxhm = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

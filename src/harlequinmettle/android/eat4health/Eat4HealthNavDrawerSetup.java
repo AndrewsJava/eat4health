@@ -24,7 +24,7 @@ import android.widget.Toast;
 public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 
 	int content_frame = 1010101;
-
+	public FrameLayout appContainer;
 	public ActionBarDrawerToggle mDrawerToggle;
 	LinearLayout menuchild;
 
@@ -107,8 +107,8 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 	protected void setUpDrawerLayout() {
 		mDrawerLayout = new android.support.v4.widget.DrawerLayout(this);
 		mDrawerLayout.setScrimColor(0x77556677);
-		FrameLayout fl = new FrameLayout(this);
-		fl.setId(content_frame);
+		appContainer = new FrameLayout(this);
+		appContainer.setId(content_frame);
 		mDrawerList = new ScrollView(this);
 		menuchild = new LinearLayout(this);
 		GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] { 0xFF616261, 0xAA131313 });
@@ -131,7 +131,7 @@ public class Eat4HealthNavDrawerSetup extends Eat4HealthListeners {
 		mDrawerList.setLayoutParams(lp);
 
 		// mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-		mDrawerLayout.addView(fl, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		mDrawerLayout.addView(appContainer, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		mDrawerLayout.addView(mDrawerList);
 		// enable ActionBar app icon to behave as action to toggle nav drawer
 		getActionBar().setDisplayHomeAsUpEnabled(true);

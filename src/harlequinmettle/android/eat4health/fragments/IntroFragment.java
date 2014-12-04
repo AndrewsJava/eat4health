@@ -21,6 +21,18 @@ public class IntroFragment extends Fragment {
 		this.progressBar = pb;
 	}
 
+	// @Override
+	// public void onDestroyView() {
+	// super.onDestroyView();
+	// View view = Eat4Health.appSelf.appContainer;
+	// if (view != null) {
+	// ViewGroup parentViewGroup = (ViewGroup) view.getParent();
+	// if (parentViewGroup != null) {
+	// parentViewGroup.removeAllViews();
+	// }
+	// }
+	// }
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		LinearLayout rootView = new LinearLayout(ContextReference.getAppContext());

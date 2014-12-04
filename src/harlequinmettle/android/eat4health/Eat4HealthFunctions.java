@@ -10,6 +10,7 @@ import android.widget.TextView;
 public class Eat4HealthFunctions extends Eat4HealthData {
 
 	public void setFragment(Fragment fragment, CharSequence label) {
+		// appSelf.appContainer.removeAllViews();
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction().replace(content_frame, fragment).commit();
 		// for back navigation

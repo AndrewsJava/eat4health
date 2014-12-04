@@ -20,6 +20,7 @@ import android.widget.ScrollView;
 public class Eat4HealthData extends ActionBarActivity implements I_Preferences, HasServingSizeInfo, FG2_I {
 	//
 
+	public static Eat4Health appSelf;
 	public static final FloatStringBimap viewMap = new FloatStringBimap();
 	public DrawerLayout mDrawerLayout;
 	public ScrollView mDrawerList;
