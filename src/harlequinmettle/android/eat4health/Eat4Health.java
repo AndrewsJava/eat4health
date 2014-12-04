@@ -17,6 +17,14 @@ public class Eat4Health extends TESTINGGROUND {
 	int xxhm = 0;
 
 	@Override
+	public void onBackPressed() {
+		if (VIEW_Q.isEmpty())
+			moveTaskToBack(true);
+		else
+			setContentView(VIEW_Q.pollLast());
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		runActivityUtilities();

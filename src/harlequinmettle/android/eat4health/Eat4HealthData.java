@@ -10,16 +10,19 @@ import harlequinmettle.android.tools.androidsupportlibrary.FloatStringBimap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
 public class Eat4HealthData extends ActionBarActivity implements I_Preferences, HasServingSizeInfo, FG2_I {
 	//
 
+	public static final LinkedBlockingDeque<View> VIEW_Q = new LinkedBlockingDeque<View>();
 	public static Eat4Health appSelf;
 	public static final FloatStringBimap viewMap = new FloatStringBimap();
 	public DrawerLayout mDrawerLayout;
