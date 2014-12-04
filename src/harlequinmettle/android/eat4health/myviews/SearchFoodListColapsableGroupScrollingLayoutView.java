@@ -86,32 +86,26 @@ public class SearchFoodListColapsableGroupScrollingLayoutView extends LinearLayo
 	}
 
 	private void setUpViews() {
-		for (int i = 0; i < Eat4Health.FOOD_GROUP_COUNT; i++) {
-			if (!Eat4Health.MY_FOOD_GROUPS[i])
-				continue;
-			new LoadFoodsToUIListAsyncTask().execute(i);
-		}
+		new LoadFoodsToUIListAsyncTask().execute();
 	}
 
 	private void addContentsToGroup(int group) {
 		int i = 0;
 		for (int foodId : Eat4Health.foodsByGroup[group]) {
 			TextView food = TextViewFactory.makeDefaultTextView(Eat4Health.foods[foodId]);
-			// if (i++ % 50 == 0)
-			// tryToSleep(30);
-			Thread.yield();
+
 			groupContents[group].addView(food);
 		}
 	}
 
-	protected void tryToSleep(long time) {
-		try {
-			Thread.sleep(time);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	// protected void tryToSleep(long time) {
+	// try {
+	// Thread.sleep(time);
+	// } catch (InterruptedException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 
 	private int getIdForGroupContentInsertableContainersLayout(int i) {
 
@@ -123,44 +117,40 @@ public class SearchFoodListColapsableGroupScrollingLayoutView extends LinearLayo
 		return i * 1000;
 	}
 
-	private class LoadFoodsToUIListAsyncTask extends AsyncTask<Integer, Integer, Integer> {
-		boolean first = true;
+	private class LoadFoodsToUIListAsyncTask extends AsyncTask<Void, Integer, Void> {
 
 		@Override
-		protected void onProgressUpdate(Integer... progress) {
+		protected void onProgressUpdate(Integer... i) {
+			if (Eat4Health.MY_FOOD_GROUPS[i[0].intValue()])
+				child.addView(groupInsertableContainers[i[0].intValue()]);
+		}
+
+		@Override
+		protected void onPostExecute(Void v) {
 
 		}
 
 		@Override
-		protected void onPostExecute(final Integer i) {
-			Eat4Health.appSelf.runOnUiThread(new Runnable() {
-				public void run() {
-					if (first) {
-						first = false;
-						tryToSleep(400);
-					}
-					child.addView(groupInsertableContainers[i.intValue()]);
-				}
-			});
-			return;
+		protected Void doInBackground(Void... params) {
 
+			for (int i = 0; i < Eat4Health.FOOD_GROUP_COUNT; i++) {
+				// if (!Eat4Health.MY_FOOD_GROUPS[i])
+				// continue;
+				isShowing[i] = true;
+				groupLabels[i] = TextViewFactory.makeLeftTextView(Eat4Health.foodGroups[i]);
+				indexMap.put(Eat4Health.foodGroups[i].hashCode(), i);
+				groupLabels[i].setOnClickListener(colapseListener);
+				groupInsertableContainers[i] = ViewFactory.basicLinearLayout();
+				groupContents[i] = ViewFactory.basicLinearLayout();
+				groupInsertableContainers[i].setId(getIdForGroupContentInsertableContainersLayout(i));
+				groupContents[i].setId(getIdForGroupContentLayout(i));
+				addContentsToGroup(i);
+				groupInsertableContainers[i].addView(groupLabels[i]);
+				groupInsertableContainers[i].addView(groupContents[i]);
+				publishProgress(i);
+			}
+			return null;
 		}
 
-		@Override
-		protected Integer doInBackground(Integer... params) {
-			int i = params[0];
-			isShowing[i] = true;
-			groupLabels[i] = TextViewFactory.makeLeftTextView(Eat4Health.foodGroups[i]);
-			indexMap.put(Eat4Health.foodGroups[i].hashCode(), i);
-			groupLabels[i].setOnClickListener(colapseListener);
-			groupInsertableContainers[i] = ViewFactory.basicLinearLayout();
-			groupContents[i] = ViewFactory.basicLinearLayout();
-			groupInsertableContainers[i].setId(getIdForGroupContentInsertableContainersLayout(i));
-			groupContents[i].setId(getIdForGroupContentLayout(i));
-			addContentsToGroup(i);
-			groupInsertableContainers[i].addView(groupLabels[i]);
-			groupInsertableContainers[i].addView(groupContents[i]);
-			return i;
-		}
 	}
 }
