@@ -1,4 +1,4 @@
-package harlequinmettle.android.eat4health.staticdataarrays;
+package harlequinmettle.android.eat4health.interfaces.staticdataarrays;
 
 public interface I_Preferences {
  

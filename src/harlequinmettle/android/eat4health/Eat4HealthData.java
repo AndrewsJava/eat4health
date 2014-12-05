@@ -2,9 +2,9 @@ package harlequinmettle.android.eat4health;
 
 import harlequinmettle.android.eat4health.datautil.GeneralLoadingThread;
 import harlequinmettle.android.eat4health.datautil.StatTool;
-import harlequinmettle.android.eat4health.staticdataarrays.FG2_I;
-import harlequinmettle.android.eat4health.staticdataarrays.HasServingSizeInfo;
-import harlequinmettle.android.eat4health.staticdataarrays.I_Preferences;
+import harlequinmettle.android.eat4health.interfaces.staticdataarrays.FG2_I;
+import harlequinmettle.android.eat4health.interfaces.staticdataarrays.HasServingSizeInfo;
+import harlequinmettle.android.eat4health.interfaces.staticdataarrays.I_Preferences;
 import harlequinmettle.android.tools.androidsupportlibrary.FloatStringBimap;
 
 import java.util.ArrayList;

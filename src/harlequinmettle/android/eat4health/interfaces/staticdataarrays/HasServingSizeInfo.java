@@ -1,4 +1,4 @@
-package harlequinmettle.android.eat4health.staticdataarrays;
+package harlequinmettle.android.eat4health.interfaces.staticdataarrays;
 
 public interface HasServingSizeInfo {
 static final int[] HAS_SERVING_INFO = {

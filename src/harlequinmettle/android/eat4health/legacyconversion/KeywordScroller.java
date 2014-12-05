@@ -1,7 +1,7 @@
 package harlequinmettle.android.eat4health.legacyconversion;
 
 import harlequinmettle.android.eat4health.Eat4Health;
-import harlequinmettle.android.eat4health.staticdataarrays.FG2_I;
+import harlequinmettle.android.eat4health.interfaces.staticdataarrays.FG2_I;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.view.View;

@@ -7,11 +7,9 @@ import harlequinmettle.android.eat4health.fragments.IntroFragment;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 public class Eat4Health extends TESTINGGROUND {
 	int xxhm = 0;
@@ -22,6 +20,7 @@ public class Eat4Health extends TESTINGGROUND {
 			moveTaskToBack(true);
 		else
 			setContentView(VIEW_Q.pollLast());
+
 	}
 
 	@Override
@@ -90,21 +89,6 @@ public class Eat4Health extends TESTINGGROUND {
 		progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
 		progressBar.setId(PROGRESS_BAR_ID);
 
-		// progressBar.setPadding(0, 0, 0, 0);
-		// progressBar.setMinimumHeight(TextViewFactory.getPixelsDensityEquivalent(144));
-		// LayoutParams barParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-		// LayoutParams.MATCH_PARENT);
-		// progressBar.setLayoutParams(barParams);
-		// progressBar.getLayoutParams().height =
-		// TextViewFactory.getPixelsDensityEquivalent(144);
-		// progressBar.getLayoutParams().width =
-		// TextViewFactory.getPixelsDensityEquivalent((int) (sw * .7));
-		progressBar.invalidate();
-
-		Toast mToast = Toast.makeText(this, "\n\n\n\n\nPlease adjust some settings while database loads\n\n\n\n\n", 1);
-		mToast.setGravity(Gravity.TOP, 0, 50);
-
-		mToast.show();
 	}
 
 	private void runActivityUtilities() {
