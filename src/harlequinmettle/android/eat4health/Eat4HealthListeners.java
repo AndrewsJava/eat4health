@@ -3,7 +3,7 @@ package harlequinmettle.android.eat4health;
 import harlequinmettle.android.eat4health.fragments.FoodListViewPagerFragment;
 import harlequinmettle.android.eat4health.fragments.FragmentCore;
 import harlequinmettle.android.eat4health.legacyconversion.FoodDescriptionsScroller;
-import harlequinmettle.android.eat4health.myviews.SearchFoodListColapsableGroupScrollingLayoutView;
+import harlequinmettle.android.eat4health.myviews.fullsortablefoodlist.SearchFoodListColapsableGroupScrollingLayoutView;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
 import harlequinmettle.android.tools.androidsupportlibrary.ViewFactory;
 import android.view.Gravity;

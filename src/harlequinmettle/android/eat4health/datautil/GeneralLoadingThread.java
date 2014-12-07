@@ -96,8 +96,7 @@ public class GeneralLoadingThread implements Runnable {
 			}
 			br.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
 		}
 
 		if (instanceType == FOOD) {
@@ -108,7 +107,6 @@ public class GeneralLoadingThread implements Runnable {
 					map[i][j] = foods.get(j);
 				}
 				Arrays.sort(map[i]);
-				// System.out.println(Arrays.toString(map[i]));
 			}
 		}
 		float threadTime = (float) ((System.currentTimeMillis() - start) / 1000.0);
