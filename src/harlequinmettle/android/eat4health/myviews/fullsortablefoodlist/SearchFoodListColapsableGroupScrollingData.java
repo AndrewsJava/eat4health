@@ -22,26 +22,28 @@ public class SearchFoodListColapsableGroupScrollingData extends LinearLayout {
 	LinearLayout[] groupInsertableContainers = new LinearLayout[Eat4Health.FOOD_GROUP_COUNT];
 	TextView[] groupLabels = new TextView[Eat4Health.FOOD_GROUP_COUNT];
 	ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, TextView>> groupHashCodeFoodTextMap = new ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, TextView>>();
-	// ScrollView[] groupContents = new ScrollView[Eat4Health.FOOD_GROUP_COUNT];
 	LinearLayout[] groupContents = new LinearLayout[Eat4Health.FOOD_GROUP_COUNT];
 	HashMap<Integer, Integer> indexMap = new HashMap<Integer, Integer>();
-	int viewIndex = 0;
-	boolean focusUp = false;
 
-	protected int getIdForGroupBoundaryMarkerLayout(int i) {
+	protected final String defaultFloatingLabelText = "Current Category (click to hide category)";
 
-		return i * 10000000;
+	protected void tryToSleep(long time) {
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
-	protected int getIdForGroupContentInsertableContainersLayout(int i) {
-
-		return i * 100000;
-	}
-
-	protected int getIdForGroupContentLayout(int i) {
-
-		return i * 1000;
-	}
+	// protected int getIdForGroupContentInsertableContainersLayout(int i) {
+	//
+	// return i * 100000;
+	// }
+	//
+	// protected int getIdForGroupContentLayout(int i) {
+	//
+	// return i * 1000;
+	// }
 
 	protected SearchFoodListColapsableGroupScrollingData(Context context) {
 		super(context);

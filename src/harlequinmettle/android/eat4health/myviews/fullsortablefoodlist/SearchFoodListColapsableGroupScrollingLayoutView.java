@@ -1,6 +1,5 @@
 package harlequinmettle.android.eat4health.myviews.fullsortablefoodlist;
 
-import harlequinmettle.android.eat4health.Eat4Health;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
 import harlequinmettle.android.tools.androidsupportlibrary.TextViewFactory;
 import harlequinmettle.android.tools.androidsupportlibrary.ViewFactory;
@@ -36,7 +35,7 @@ public class SearchFoodListColapsableGroupScrollingLayoutView extends SearchFood
 		searchBox.setBackgroundColor(0xffffffff);
 		searchBox.addTextChangedListener(textFilterInputListener);
 
-		imobileLabel = TextViewFactory.makeAnotherTextView("stationary food group label");
+		imobileLabel = TextViewFactory.makeAnotherTextView(defaultFloatingLabelText);
 		imobileLabel.setBackgroundColor(0xff454545);
 		imobileLabel.setOnClickListener(colapseListener);
 
@@ -56,35 +55,10 @@ public class SearchFoodListColapsableGroupScrollingLayoutView extends SearchFood
 		setBackgroundColor(0xFF202020);
 	}
 
-	// protected void tryToSleep(long time) {
-	// try {
-	// Thread.sleep(time);
-	// } catch (InterruptedException e) {
-	// e.printStackTrace();
-	// }
-	// }
-
 	@Override
-	public void doWhenViewScollsOutOfView() {
+	public void notifyTopAfterScrollEvent(int scrolltop) {
 
-		updateFloatingTextLabel();
-
-	}
-
-	@Override
-	public void doWhenViewScollsIntoView() {
-		int lastIndex = viewIndex;
-
-		while (!Eat4Health.MY_FOOD_GROUPS[--viewIndex])
-			if (viewIndex > 0)
-				continue;
-			else
-				viewIndex = lastIndex;
-		String text = Eat4Health.foodGroups[viewIndex];
-		imobileLabel.setText(text);
-		imobileLabel.setId(text.hashCode());
-		scrollingFilterableContainer.setVisibleViewLabel(groupLabels[viewIndex]);
-		// scrollingFilterableContainer.setVisibleViewContents(groupContents[viewIndex]);
+		updateFloatingTextLabel(scrolltop);
 
 	}
 

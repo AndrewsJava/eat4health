@@ -16,14 +16,30 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extends SearchFoodListColapsableGroupScrollingData {
-	protected void updateFloatingTextLabel() {
-		String text = Eat4Health.foodGroups[viewIndex];
-		viewIndex++;
-		while (!Eat4Health.MY_FOOD_GROUPS[viewIndex])
-			viewIndex++;
+	protected void updateFloatingTextLabel(int scrolltop) {
+		boolean useDefaultText = false;
+		int i = 0;
+		for (; i < Eat4Health.FOOD_GROUP_COUNT; i++) {
+
+			if (i >= Eat4Health.FOOD_GROUP_COUNT) {
+				useDefaultText = true;
+				break;
+			}
+			if (groupInsertableContainers[i] == null)
+				continue;
+			if (groupInsertableContainers[i].getY() - scrolltop <= 0 && groupInsertableContainers[i].getBottom() - scrolltop > 0)
+				break;
+		}
+		if (i >= Eat4Health.FOOD_GROUP_COUNT) {
+			useDefaultText = true;
+		}
+		String text = defaultFloatingLabelText;
+		if (!useDefaultText)
+			text = groupLabels[i].getText().toString();
+
 		imobileLabel.setText(text);
 		imobileLabel.setId(text.hashCode());
-		scrollingFilterableContainer.setVisibleViewLabel(groupLabels[viewIndex]);
+
 	}
 
 	protected OnClickListener colapseListener = new View.OnClickListener() {
@@ -31,23 +47,25 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 		public void onClick(View view) {
 			// default textview id is hashcode of text
 			int id = view.getId();
+			if (!indexMap.containsKey(id))
+				return;
 			int labelHashCodeToIntID = indexMap.get(id);
 			toggleViewVisibility(labelHashCodeToIntID);
 		}
 
-		private void toggleViewVisibility(int id) {
+		private void toggleViewVisibility(int index) {
 
-			LinearLayout toggleableContainer = groupInsertableContainers[id];
+			LinearLayout toggleableContainer = groupInsertableContainers[index];
 			if (toggleableContainer == null)
 				return;
-			LinearLayout hideable = groupContents[id];
-			if (!isCurrentlyViewableInScroll[id]) {
-				isCurrentlyViewableInScroll[id] = true;
+			LinearLayout hideable = groupContents[index];
+			if (!isCurrentlyViewableInScroll[index]) {
+				isCurrentlyViewableInScroll[index] = true;
 				toggleableContainer.addView(hideable);
 			} else {
-				isCurrentlyViewableInScroll[id] = false;
+				isCurrentlyViewableInScroll[index] = false;
 				toggleableContainer.removeView(hideable);
-				focusOnView(id);
+				focusOnView(index);
 			}
 		}
 
@@ -55,19 +73,11 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 			new Handler().post(new Runnable() {
 				@Override
 				public void run() {
-					if (index + 1 < Eat4Health.FOOD_GROUP_COUNT)
-
+					if (index + 1 < Eat4Health.FOOD_GROUP_COUNT) {
 						scrollingFilterableContainer.scrollTo(0, groupInsertableContainers[index].getBottom());
-					// animateScroll(index);
-					 updateFloatingTextLabel();
+					}
 				}
 
-				// private void animateScroll(int index) {
-				// while
-				// (scrollingFilterableContainer.isViewVisible(groupInsertableContainers[index]))
-				// scrollingFilterableContainer.scrollBy(0, 1);
-				//
-				// }
 			});
 		}
 	};
@@ -89,19 +99,12 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 
 	// ////////////////////////////////////////ASYNCTASK
 	protected class LoadFoodsToUIListAsyncTask extends AsyncTask<Void, Integer, Void> {
-		boolean first = true;
-		int foodcounter = 0;
 
 		@Override
 		protected void onProgressUpdate(Integer... iArray) {
 			int i = iArray[0];
 			if (Eat4Health.MY_FOOD_GROUPS[i]) {
-				if (first) {
-					scrollingFilterableContainer.setVisibleViewLabel(groupLabels[i]);
-					// scrollingFilterableContainer.setVisibleViewContents(groupContents[i]);
-					viewIndex = i;
-					first = false;
-				}
+
 				child.addView(groupInsertableContainers[i]);
 			}
 		}
@@ -121,8 +124,8 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 				groupInsertableContainers[i] = ViewFactory.basicLinearLayout();
 				groupContents[i] = ViewFactory.basicLinearLayout();
 
-				groupInsertableContainers[i].setId(getIdForGroupContentInsertableContainersLayout(i));
-				groupContents[i].setId(getIdForGroupContentLayout(i));
+				// groupInsertableContainers[i].setId(getIdForGroupContentInsertableContainersLayout(i));
+				// groupContents[i].setId(getIdForGroupContentLayout(i));
 				addContentsToGroup(i);
 				groupInsertableContainers[i].addView(groupLabels[i]);
 				if (isCurrentlyViewableInScroll[i])
@@ -167,32 +170,21 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 				if (!Eat4Health.MY_FOOD_GROUPS[i])
 					continue;
 
-				isCurrentlyViewableInScroll[i] = true;
-				groupLabels[i] = TextViewFactory.makeAnotherTextView(Eat4Health.foodGroups[i]);
-				indexMap.put(Eat4Health.foodGroups[i].hashCode(), i);
-				groupLabels[i].setOnClickListener(colapseListener);
-
-				groupInsertableContainers[i] = ViewFactory.basicLinearLayout();
-				groupContents[i] = ViewFactory.basicLinearLayout();
-
-				groupInsertableContainers[i].setId(getIdForGroupContentInsertableContainersLayout(i));
-				groupContents[i].setId(getIdForGroupContentLayout(i));
-				addContentsToGroup(i);
-				groupInsertableContainers[i].addView(groupLabels[i]);
-				groupInsertableContainers[i].addView(groupContents[i]);
-				publishProgress(i);
+				// addContentsToGroup(i);
+				// publishProgress(i);
 			}
 			return null;
 		}
 
-		private void addContentsToGroup(int group) {
-			int i = 0;
-			for (int foodId : Eat4Health.foodsByGroup[group]) {
-				TextView food = TextViewFactory.makeDefaultTextView(Eat4Health.foods[foodId]);
-
-				groupContents[group].addView(food);
-			}
-		}
+		// private void addContentsToGroup(int group) {
+		// int i = 0;
+		// for (int foodId : Eat4Health.foodsByGroup[group]) {
+		// TextView food =
+		// TextViewFactory.makeDefaultTextView(Eat4Health.foods[foodId]);
+		//
+		// groupContents[group].addView(food);
+		// }
+		// }
 
 	}
 
