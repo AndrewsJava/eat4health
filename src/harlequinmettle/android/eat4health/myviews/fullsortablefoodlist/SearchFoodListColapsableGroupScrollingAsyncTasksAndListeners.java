@@ -5,12 +5,14 @@ import harlequinmettle.android.tools.androidsupportlibrary.TextViewFactory;
 import harlequinmettle.android.tools.androidsupportlibrary.ViewFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -85,6 +87,14 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			if (s.length() < 3)
+				return;
+			if (searchFilterAsyncTask != null) {
+				searchFilterAsyncTask.cancel(true);
+				tryToSleep(10);
+			}
+			searchFilterAsyncTask = new FilterFoodsToUIListAsyncTask();
+			searchFilterAsyncTask.execute(s.toString());
 		}
 
 		@Override
@@ -138,6 +148,7 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 		private void addContentsToGroup(int group) {
 			int i = 0;
 			ConcurrentHashMap<Integer, TextView> groupMap = groupHashCodeFoodTextMap.get(i);
+
 			for (int foodId : Eat4Health.foodsByGroup[group]) {
 				TextView food = TextViewFactory.makeDefaultTextView(Eat4Health.foods[foodId]);
 				groupContents[group].addView(food);
@@ -145,36 +156,72 @@ public class SearchFoodListColapsableGroupScrollingAsyncTasksAndListeners extend
 
 			}
 		}
-
 	}
 
 	// ///////////////////////
 	// //////////////////////
 
-	protected class FilterFoodsToUIListAsyncTask extends AsyncTask<Void, Integer, Void> {
+	protected class FilterFoodsToUIListAsyncTask extends AsyncTask<String, CopyOnWriteArrayList<Integer>, Void> {
 
 		@Override
-		protected void onProgressUpdate(Integer... iArray) {
+		protected void onProgressUpdate(CopyOnWriteArrayList<Integer>... iArray) {
+			CopyOnWriteArrayList<Integer> filteredSet = iArray[0];
+			int group = filteredSet.get(0);
+			Log.v("filter", "group: " + group);
+			ConcurrentHashMap<Integer, TextView> groupMap = groupHashCodeFoodTextMap.get(group);
+			LinearLayout container = groupContents[group];
+			container.removeAllViews();
+			for (int hashCode : filteredSet) {
+
+				if (isCancelled())
+					break;
+				TextView foodType = groupMap.get(hashCode);
+				if (foodType == null)
+					continue;
+				Log.v("filter", "TextView ref: " + group);
+				container.addView(foodType);
+			}
 
 		}
 
 		@Override
-		protected void onPostExecute(Void v) {
-
-		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-
+		protected Void doInBackground(String... params) {
+			String filterFor = params[0];
 			for (int i = 0; i < Eat4Health.FOOD_GROUP_COUNT; i++) {
+
+				if (isCancelled())
+					break;
 				if (!Eat4Health.MY_FOOD_GROUPS[i])
 					continue;
-
+				CopyOnWriteArrayList<Integer> filteredHashCodes = new CopyOnWriteArrayList<Integer>();
+				filteredHashCodes.add(i);
 				// addContentsToGroup(i);
-				// publishProgress(i);
+				filterGroup(i, filterFor, filteredHashCodes);
+				publishProgress(filteredHashCodes);
 			}
 			return null;
 		}
+
+		private void filterGroup(int i, String filterFor, CopyOnWriteArrayList<Integer> filteredHashCodes) {
+			int[] groupFoodIndicies = Eat4Health.foodsByGroup[i];
+			for (int index : groupFoodIndicies) {
+
+				if (isCancelled())
+					break;
+				String foodText = Eat4Health.foods[index];
+
+				Log.v("filter", " checking food: " + foodText);
+				if (foodText.contains(filterFor))
+					filteredHashCodes.add(foodText.hashCode());
+			}
+
+		}
+
+		// get text from edittext
+		// iterate through foods compare (possibly regex)
+		// check for thread cancelation
+		// separate results - partial results - misses
+		// display results
 
 		// private void addContentsToGroup(int group) {
 		// int i = 0;
