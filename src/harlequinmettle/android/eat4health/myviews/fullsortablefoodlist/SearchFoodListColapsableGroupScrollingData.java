@@ -14,18 +14,18 @@ import android.widget.TextView;
 
 public class SearchFoodListColapsableGroupScrollingData extends LinearLayout {
 
-	Context context;
-	EditText searchBox;
-	TextView imobileLabel;
-	CustomScrollView scrollingFilterableContainer;
-	LinearLayout child;
-	boolean[] isCurrentlyViewableInScroll = new boolean[Eat4Health.FOOD_GROUP_COUNT];
-	LinearLayout[] groupInsertableContainers = new LinearLayout[Eat4Health.FOOD_GROUP_COUNT];
-	TextView[] groupLabels = new TextView[Eat4Health.FOOD_GROUP_COUNT];
-	ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, TextView>> groupHashCodeFoodTextMap = new ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, TextView>>();
-	LinearLayout[] groupContents = new LinearLayout[Eat4Health.FOOD_GROUP_COUNT];
-	HashMap<Integer, Integer> indexMap = new HashMap<Integer, Integer>();
-	FilterFoodsToUIListAsyncTask searchFilterAsyncTask;
+	protected Context context;
+	protected EditText searchBox;
+	protected TextView imobileLabel;
+	protected CustomScrollView scrollingFilterableContainer;
+	protected LinearLayout child;
+	protected FilterFoodsToUIListAsyncTask searchFilterAsyncTask;
+	protected final boolean[] isCurrentlyViewableInScroll = new boolean[Eat4Health.FOOD_GROUP_COUNT];
+	protected final LinearLayout[] groupInsertableContainers = new LinearLayout[Eat4Health.FOOD_GROUP_COUNT];
+	protected final TextView[] groupLabels = new TextView[Eat4Health.FOOD_GROUP_COUNT];
+	protected final ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, TextView>> groupHashCodeFoodTextMap = new ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, TextView>>();
+	protected final LinearLayout[] groupContents = new LinearLayout[Eat4Health.FOOD_GROUP_COUNT];
+	protected final HashMap<Integer, Integer> indexMap = new HashMap<Integer, Integer>();
 	protected final String defaultFloatingLabelText = "Current Category (click to hide category)";
 
 	protected void tryToSleep(long time) {

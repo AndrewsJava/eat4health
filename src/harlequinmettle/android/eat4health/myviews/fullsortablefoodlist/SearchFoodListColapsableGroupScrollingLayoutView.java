@@ -1,5 +1,6 @@
 package harlequinmettle.android.eat4health.myviews.fullsortablefoodlist;
 
+import harlequinmettle.android.eat4health.Eat4Health;
 import harlequinmettle.android.tools.androidsupportlibrary.ContextReference;
 import harlequinmettle.android.tools.androidsupportlibrary.TextViewFactory;
 import harlequinmettle.android.tools.androidsupportlibrary.ViewFactory;
@@ -58,7 +59,28 @@ public class SearchFoodListColapsableGroupScrollingLayoutView extends SearchFood
 	@Override
 	public void notifyTopAfterScrollEvent(int scrolltop) {
 
-		updateFloatingTextLabel(scrolltop);
+		boolean useDefaultText = false;
+		int i = 0;
+		for (; i < Eat4Health.FOOD_GROUP_COUNT; i++) {
+
+			if (i >= Eat4Health.FOOD_GROUP_COUNT) {
+				useDefaultText = true;
+				break;
+			}
+			if (groupInsertableContainers[i] == null)
+				continue;
+			if (groupInsertableContainers[i].getY() - scrolltop <= 0 && groupInsertableContainers[i].getBottom() - scrolltop > 0)
+				break;
+		}
+		if (i >= Eat4Health.FOOD_GROUP_COUNT) {
+			useDefaultText = true;
+		}
+		String text = defaultFloatingLabelText;
+		if (!useDefaultText)
+			text = groupLabels[i].getText().toString();
+
+		imobileLabel.setText(text);
+		imobileLabel.setId(text.hashCode());
 
 	}
 
